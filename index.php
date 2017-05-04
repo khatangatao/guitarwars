@@ -12,29 +12,42 @@
   <hr />
 
 <?php
-  ini_set('display_errors',1);
-  error_reporting(E_ALL);
+ini_set('display_errors',1);
+error_reporting(E_ALL);
 
+//Поключаем конфигурационные файлы
+require_once('connectvars.php');
+require_once('appvars.php');
 
-  // Connect to the database 
-  $dbc = mysqli_connect('localhost', 'root', '', 'gwdb');
+// //Инициализация константы, содержащей имя каталога для загружаемых файлов изображений
+// define('GW_UPLOADPATH', 'images/');
 
-  // Извлечение данных их базы 
-  $query = "SELECT * FROM guitarwars";
-  $data = mysqli_query($dbc, $query);
+// Connect to the database 
+$dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
-  // Извлечение данных из массива в цикле. Форматирование в виде кода HTML 
-  echo '<table>';
-  while ($row = mysqli_fetch_array($data)) { 
+// Извлечение данных их базы 
+$query = "SELECT * FROM guitarwars ORDER BY score DESC, date ASC";
+$data = mysqli_query($dbc, $query);
+
+// Извлечение данных из массива в цикле. Форматирование в виде кода HTML 
+echo '<table>';
+while ($row = mysqli_fetch_array($data)) { 
     // Display the score data
     echo '<tr><td class="scoreinfo">';
     echo '<span class="score">' . $row['score'] . '</span><br />';
-    echo '<strong>Name:</strong> ' . $row['name'] . '<br />';
-    echo '<strong>Date:</strong> ' . $row['date'] . '</td></tr>';
-  }
-  echo '</table>';
+    echo '<strong>Имя:</strong> ' . $row['name'] . '<br />';
+    echo '<strong>Дата:</strong> ' . $row['date'] . '</td></tr>';
+    if (is_file(GW_UPLOADPATH . $row['screenshot']) && filesize(GW_UPLOADPATH . $row['screenshot']) > 0) {
+        echo '<td><img src="' . GW_UPLOADPATH . $row['screenshot'] . '" alt="Подтверждено" /></td></tr>';
+    }
+    else {
+        echo '<td><img src="' . GW_UPLOADPATH . 'unverified.gif' . '" alt="Не подтверждено" /></td></tr>';
+    }
 
-  mysqli_close($dbc);
+}
+echo '</table>';
 
-  //phpinfo();
+mysqli_close($dbc);
+
+//phpinfo(32);
 ?>
