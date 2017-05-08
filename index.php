@@ -31,8 +31,16 @@ $data = mysqli_query($dbc, $query);
 
 // Извлечение данных из массива в цикле. Форматирование в виде кода HTML 
 echo '<table>';
+$i = 0;
 while ($row = mysqli_fetch_array($data)) { 
-    // Display the score data
+    //Самый большой рейтинг выделяем
+    if ( $i == 0) {
+        echo '<tr><th class="topscoreheader">' . 'Наивысший рейтинг: ' . $row['score'] . '</th></tr>';
+        $i++;
+    }
+
+
+    // Выводим рейтинговую таблицу
     echo '<tr><td class="scoreinfo">';
     echo '<span class="score">' . $row['score'] . '</span><br />';
     echo '<strong>Имя:</strong> ' . $row['name'] . '<br />';

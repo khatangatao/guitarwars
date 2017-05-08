@@ -23,39 +23,58 @@ require_once('appvars.php');
 
 
 if (isset($_POST['submit'])) {
-    // Grab the score data from the POST
+    // Сохраняем данные, отправленные методом POST
     $name = $_POST['name'];
     $score = $_POST['score'];
     $screenshot = $_FILES['screenshot']['name'];
+    $screenshot_size = $_FILES['screenshot']['size'];
+    $screenshot_type = $_FILES['screenshot']['type'];
 
     if (!empty($name) && !empty($score) && !empty($screenshot)) {
-        $target = GW_UPLOADPATH . $screenshot;
-        if (move_uploaded_file($_FILES['screenshot']['tmp_name'], $target)) {
-            // Соденинение с БД
-            $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        if ((($screenshot_type == 'image/gif') || ($screenshot_type == 'image/jpeg') || ($screenshot_type == 'image/pjpeg') 
+            || ($screenshot_type == 'image/png')) && ($screenshot_size >0) && ($screenshot_size <= GW_MAXFILESIZE)) { 
 
-            // Формирование запроса в БД
-            $query = "INSERT INTO guitarwars VALUES (0, NOW(), '$name', '$score', '$screenshot')";
+            //переменная для запроса в БД
+            $db_target = time() . $screenshot;
+            
+            //переменная для перемещения файла на постоянное место хранения
+            $target = GW_UPLOADPATH . $db_target;
+            
+            if (move_uploaded_file($_FILES['screenshot']['tmp_name'], $target)) {
+                // Соденинение с БД
+                $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
-            //выполнение запроса в БД
-            mysqli_query($dbc, $query);
+                // Формирование запроса в БД
 
-            // Подтверждаем успешный ввод данных
-            echo '<p>Спасибо за добавление твоего нового достижения!</p>';
-            echo '<p><strong>Имя:</strong> ' . $name . '<br />';
-            echo '<strong>Рейтинг:</strong> ' . $score . '<br />';
-            echo '<img src="' . GW_UPLOADPATH . $screenshot . '" alt="Изображение подтверждающее рейтинг" /></p>';
-            echo '<br>';          
-            echo '<p><a href="index.php">&lt;&lt; Назад к списку рейтингов</a></p>';
+                $query = "INSERT INTO guitarwars VALUES (0, NOW(), '$name', '$score', '$db_target')";
 
-            // Очистка полей формы
-            $name = "";
-            $score = "";
+                //выполнение запроса в БД
+                mysqli_query($dbc, $query);
 
-            mysqli_close($dbc);
+                // Подтверждаем успешный ввод данных
+                echo '<p>Спасибо за добавление твоего нового достижения!</p>';
+                echo '<p><strong>Имя:</strong> ' . $name . '<br />';
+                echo '<strong>Рейтинг:</strong> ' . $score . '<br />';
+                echo '<img src="' . $target . '" alt="Изображение подтверждающее рейтинг" /></p>';
+
+                //echo '<img src="' . GW_UPLOADPATH . $screenshot . '" alt="Изображение подтверждающее рейтинг" /></p>';
+                echo '<br>';          
+                echo '<p><a href="index.php">&lt;&lt; Назад к списку рейтингов</a></p>';
+
+                // Очистка полей формы
+                $name = "";
+                $score = "";
+
+                mysqli_close($dbc);
+            } else {
+                echo '<p class="error">Ошибка перемещения файла.</p>';
+            }
         } else {
-            echo '<p class="error">Ошибка перемещения файла.</p>';
+            echo '<p class="error"> Файл, подтверждающий рейтинг, должен' . 'быть файлом изображения в форматах GIF, JPEG или PNG,' . 'и его размер не должен превышать ' . 
+            (GW_MAXFILESIZE / 1024) . ' Кб. </p>';
         }
+        //Попытка удалить временный файл изображения, подтверждающий рейтинг пользователя
+        unlink($_FILES['screenshot']['tmp_name']);
 
     } else {
       echo '<p class="error">Пожалуйста введите недостающую информацию</p>';
@@ -79,5 +98,7 @@ if (isset($_POST['submit'])) {
 <!--     <img src="unverified.gif">
     <img src="images/phizsscore.gif"> -->
   </form>
+<?php phpinfo(32); ?>
+
 </body> 
 </html>
