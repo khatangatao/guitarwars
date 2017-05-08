@@ -24,13 +24,13 @@ require_once('appvars.php');
 
 if (isset($_POST['submit'])) {
     // Сохраняем данные, отправленные методом POST
-    $name = $_POST['name'];
-    $score = $_POST['score'];
-    $screenshot = $_FILES['screenshot']['name'];
+    $name = trim($_POST['name']);
+    $score = trim($_POST['score']);
+    $screenshot = trim($_FILES['screenshot']['name']);
     $screenshot_size = $_FILES['screenshot']['size'];
     $screenshot_type = $_FILES['screenshot']['type'];
 
-    if (!empty($name) && !empty($score) && !empty($screenshot)) {
+    if (!empty($name) && !is_numeric($score) && !empty($screenshot)) {
         if ((($screenshot_type == 'image/gif') || ($screenshot_type == 'image/jpeg') || ($screenshot_type == 'image/pjpeg') 
             || ($screenshot_type == 'image/png')) && ($screenshot_size >0) && ($screenshot_size <= GW_MAXFILESIZE)) { 
 
@@ -46,7 +46,7 @@ if (isset($_POST['submit'])) {
 
                 // Формирование запроса в БД
 
-                $query = "INSERT INTO guitarwars VALUES (0, NOW(), '$name', '$score', '$db_target')";
+                $query = "INSERT INTO guitarwars (date, name, score, screenshot) VALUES (NOW(), '$name', '$score', '$db_target')";
 
                 //выполнение запроса в БД
                 mysqli_query($dbc, $query);
