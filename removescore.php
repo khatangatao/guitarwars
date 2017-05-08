@@ -7,7 +7,7 @@ require_once('authorize.php');
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Гитарные войны. Удаление рейтинг</title>
+  <title>Гитарные войны. Удаление рейтинга</title>
   <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>

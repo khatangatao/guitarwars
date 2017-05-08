@@ -27,12 +27,18 @@ $data = mysqli_query($dbc, $query);
 //Извлечение данных из массива в цикле
 //Формирование данных записей в виде кода HTML
 echo '<table>';
+echo '<tr><th>Имя</th><th>Дата</th><th>Рейтинг</th><th>Действие</th></tr>';
 while ($row = mysqli_fetch_array($data)) {
 	//Вывод данных
 	echo '<tr class="scorerow"><td><strong>' . $row['name'] . '</strong><td>';
 	echo '<td>' . $row['date'] . '</td>';
 	echo '<td>' . $row['score'] . '</td>';
-	echo '<td><a href="removescore.php?id=' . $row['id'] . '&amp;date=' . $row['date'] . '&amp;name=' . $row['name'] . '&amp;score=' . $row['score'] . '&amp;screenshot=' . $row['screenshot'] . '">Удалить</a></td></tr>';
+	echo '<td><a href="removescore.php?id=' . $row['id'] . '&amp;date=' . $row['date'] . '&amp;name=' . $row['name'] . '&amp;score=' . $row['score'] . '&amp;screenshot=' . $row['screenshot'] . '">Удалить</a>';
+	if ($row['approved'] =='0') {
+		echo '<td><a href="moderate.php?id=' . $row['id'] . '&amp;date=' . $row['date'] . '&amp;name=' . $row['name'] . '&amp;score=' . $row['score'] . '&amp;screenshot=' . $row['screenshot'] . '">Разрешить</a>';
+	}
+
+	echo '</td></tr>';
 }
 
 echo '</table>';

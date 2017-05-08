@@ -26,7 +26,7 @@ require_once('appvars.php');
 $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
 // Извлечение данных их базы 
-$query = "SELECT * FROM guitarwars ORDER BY score DESC, date ASC";
+$query = "SELECT * FROM guitarwars WHERE approved = 1 ORDER BY score DESC, date ASC";
 $data = mysqli_query($dbc, $query);
 
 // Извлечение данных из массива в цикле. Форматирование в виде кода HTML 
